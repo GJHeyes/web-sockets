@@ -1,27 +1,38 @@
 // io() is a method from the socket library added in our html file
 const socket = io(),
-  form = document.querySelector("form"),
-  input = document.querySelector("input"),
+  form = document.querySelector("#message-form"),
+  input = document.querySelector("#chat"),
   messages = document.querySelector("ul");
+  speechBubble = document.getElementById("bubble")
 
-// On submission of our form our anonymous callback function will run
-form.addEventListener("submit", function (e) {
-  // event.preventDefault() prevents the defauly action of this particular event, which is to refresh the page
-  e.preventDefault();
-  // Condition checking for text written in the input element
-  if (input.value) {
-    // Using the "emit" method to send a "chat message" event to our web server with the contents of our input tag
-    socket.emit("chat message", input.value);
-    // Resetting the input to empty
-    input.value = "";
-  }
+let userTyping = false;
+let userSet = false;
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+form.addEventListener("keydown", async function (e) {
+  await delay(0)
+  socket.emit("keypress", {inputLength: input.value.length, user: localStorage.getItem("user")});
 });
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+})
 
-// Using the "on event" method, on receipt of a chat message event from our web server it will run our callback function
-socket.on("chat message", function (msg) {
-  // This logic inserts the recieved message in a newly created list item node and scrolls to the most recent message
-  const item = document.createElement("li");
-  item.textContent = msg;
-  messages.appendChild(item);
-  window.scrollTo(0, document.body.scrollHeight);
+socket.on("connection", function (user){
+  if(!userSet){
+    localStorage.setItem("user", user)
+    userSet = true;
+  }
+})
+socket.on("keypress", function (userInfo) {
+  if (userInfo.inputLength >0 && userInfo.user !== localStorage.getItem("user")) {
+    if(!userTyping){
+      speechBubble.classList.remove("hidden")
+    }
+    userTyping = true;
+  }else if(userInfo.inputLength === 0 && userInfo.user !== localStorage.getItem("user")){
+    speechBubble.classList.add("hidden")
+    userTyping = false
+  }
 });

@@ -11,9 +11,14 @@ let userSet = false;
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
+
+document.addEventListener('mousemove', event=>{
+  const {pageX, pageY} = event
+  console.log(pageX, pageY)
+}) 
 form.addEventListener("keydown", async function (e) {
   await delay(0)
-  socket.emit("keypress", {inputLength: input.value.length, user: localStorage.getItem("user")});
+  socket.emit("keydown", {inputLength: input.value.length, user: localStorage.getItem("user")});
 });
 form.addEventListener("submit", function(e){
   e.preventDefault();
@@ -25,7 +30,7 @@ socket.on("connection", function (user){
     userSet = true;
   }
 })
-socket.on("keypress", function (userInfo) {
+socket.on("keydown", function (userInfo) {
   if (userInfo.inputLength >0 && userInfo.user !== localStorage.getItem("user")) {
     if(!userTyping){
       speechBubble.classList.remove("hidden")

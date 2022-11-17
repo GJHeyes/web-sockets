@@ -15,9 +15,9 @@ io.on("connection", (socket) => {
   
   // Socket is what is recieved when a connection is made, it contains values and methods
   // Using the "on event" method from our socket to run our callback function when a message has been sent
-  socket.on("keypress", (userInfo) => {
+  socket.on("keydown", (userInfo) => {
     // Using the "emit" method to send a keypress to all connected instances
-    io.emit("keypress", userInfo);
+    io.emit("keydown", userInfo);
   });
 });
 

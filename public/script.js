@@ -11,11 +11,30 @@ let userSet = false;
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
+/*******************pendrawing***********************/
+
+let penDown = false
 
 document.addEventListener('mousemove', event=>{
-  const {pageX, pageY} = event
-  console.log(pageX, pageY)
+  if(penDown){
+    const {pageX, pageY} = event
+    socket.emit("pendrawing", {pageX: pageX, pageY: pageY})
+  }
+
 }) 
+
+document.addEventListener('mousedown', ()=>{
+  penDown = true
+})
+
+document.addEventListener('mouseup', ()=>{
+  penDown = false
+})
+
+socket.on("pendrawing", function (penInfo){
+  console.log(`PageX: ${penInfo.pageX} PageY: ${penInfo.pageY}` )
+})
+/*******************pendrawing***********************/
 form.addEventListener("keydown", async function (e) {
   await delay(0)
   socket.emit("keydown", {inputLength: input.value.length, user: localStorage.getItem("user")});

@@ -13,6 +13,9 @@ io.on("connection", (socket) => {
   user++
   io.emit("connection",user)
   
+  socket.on("pendrawing", (penInfo)=>{
+    io.emit("pendrawing", penInfo)
+  })
   // Socket is what is recieved when a connection is made, it contains values and methods
   // Using the "on event" method from our socket to run our callback function when a message has been sent
   socket.on("keydown", (userInfo) => {
